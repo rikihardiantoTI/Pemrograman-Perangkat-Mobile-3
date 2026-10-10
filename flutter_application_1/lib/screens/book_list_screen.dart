@@ -3,12 +3,13 @@ import 'package:provider/provider.dart';
 
 import '../models/book.dart';
 import '../providers/cart_provider.dart';
-import '../providers/theme_provider.dart'; // Wajib import file ThemeProvider
+import '../providers/theme_provider.dart';
 import 'cart_screen.dart';
 
 class BookListScreen extends StatelessWidget {
   const BookListScreen({super.key});
 
+  // Minimal 4 Buku
   static final List<Book> dummyBooks = [
     Book(id: 'b1', title: 'Bumi Manusia', author: 'Pramoedya Ananta Toer', price: 95000),
     Book(id: 'b2', title: 'Laskar Pelangi', author: 'Andrea Hirata', price: 85000),
@@ -20,10 +21,10 @@ class BookListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NusaBookstore'),
+        title: const Text('Katalog Buku'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         actions: [
-          // ---> 1. TOMBOL GANTI TEMA (DARK/LIGHT MODE) <---
+          // Tombol Light/Dark Mode
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -31,13 +32,14 @@ class BookListScreen extends StatelessWidget {
                   themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                 ),
                 onPressed: () {
-                  themeProvider.toggleTheme();
+                  // Menggunakan context.read() untuk merubah data tema
+                  context.read<ThemeProvider>().toggleTheme();
                 },
               );
             },
           ),
 
-          // ---> 2. TOMBOL KERANJANG BELANJA <---
+          // Ikon Keranjang dengan Badge
           Consumer<CartProvider>(
             builder: (context, cart, child) => Stack(
               alignment: Alignment.center,
@@ -51,7 +53,7 @@ class BookListScreen extends StatelessWidget {
                     );
                   },
                 ),
-                // Menampilkan angka indikator jumlah barang di keranjang
+                // Badge akan otomatis muncul & berubah angkanya ketika ada item
                 if (cart.items.isNotEmpty)
                   Positioned(
                     right: 8,
@@ -60,7 +62,7 @@ class BookListScreen extends StatelessWidget {
                       radius: 9,
                       backgroundColor: Colors.red,
                       child: Text(
-                        cart.totalItems.toString(), // Memanggil totalItems dari provider baru
+                        cart.totalItems.toString(),
                         style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -70,6 +72,7 @@ class BookListScreen extends StatelessWidget {
           ),
         ],
       ),
+      // Menggunakan ListView dan Card sesuai ketentuan
       body: ListView.builder(
         itemCount: dummyBooks.length,
         itemBuilder: (context, index) {
@@ -87,21 +90,22 @@ class BookListScreen extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 ),
                 onPressed: () {
-                  // Memanggil addItem sesuai dengan CartProvider versi terbaru
-                  Provider.of<CartProvider>(context, listen: false).addItem(
+                  // Menggunakan context.read() untuk menambah data ke keranjang
+                  context.read<CartProvider>().addItem(
                     book.id,
                     book.title,
                     book.price,
                   );
+                  
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('${book.title} ditambahkan ke keranjang!'),
+                      content: Text('${book.title} ditambahkan!'),
                       duration: const Duration(seconds: 1),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
                 },
-                child: const Text('Beli'),
+                child: const Text('Tambah ke Keranjang'), // Label tombol disesuaikan
               ),
             ),
           );
