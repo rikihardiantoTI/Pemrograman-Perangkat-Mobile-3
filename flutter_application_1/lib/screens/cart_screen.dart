@@ -22,7 +22,7 @@ class CartScreen extends StatelessWidget {
                 : ListView.builder(
                     itemCount: cart.items.length,
                     itemBuilder: (context, index) {
-                      final book = cart.items[index];
+                      final book = cart.items.values.toList()[index];
                       return Card(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         child: ListTile(
@@ -32,7 +32,7 @@ class CartScreen extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              cart.removeBook(book);
+                              cart.removeItem(book.id);
                             },
                           ),
                         ),
